@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 from operator import itemgetter
 
-from napi import getNews
 
 url_login = "https://accounts.google.com/ServiceLogin?service=finance"
 url_auth = "https://accounts.google.com/ServiceLoginAuth"
@@ -37,13 +36,14 @@ class SessionGoogle:
 def get_news_data(symbol):
     news_url = 'http://www.google.com/finance/company_news?output=json&q=' + symbol + '&start=0&num=1'
     r = requests.get(news_url)
-    content_json = demjson.decode(json.loads(json.dumps(r.text)))
     article_json = []
-    news_json = content_json['clusters']
-    for cluster in news_json:
-        for article in cluster:
-            if article == 'a':
-                article_json.extend(cluster[article])
+    if r.status_code == 200:
+        content_json = demjson.decode(json.loads(json.dumps(r.text)))
+        news_json = content_json['clusters']
+        for cluster in news_json:
+            for article in cluster:
+                if article == 'a':
+                    article_json.extend(cluster[article])
     return article_json
 
 
@@ -57,13 +57,39 @@ def get_finance_data():
     nav_filter_list = filter_list[0:15]
     pos_filter_list = sorted(filter_list[-15:], key = itemgetter(9) ,reverse=True)
 
-    for n in nav_filter_list:
-        json_news = get_news_data(n[1])
-        n.append(json_news[0]["t"])
+    with open('data.json', 'r') as data_file:
+        json_data = json.load(data_file)
 
-    for p in pos_filter_list:
+    dict_nav = {}
+    dict_pos = {}
+
+    for i, n in enumerate(nav_filter_list):
+        dict_nav[n[1]] = i + 1
+        json_news = get_news_data(n[1])
+        if json_news != []:
+            n.append(json_news[0]["t"])
+        else:
+            n.append("")
+        if json_data["nav"][n[1]] and json_data["nav"][n[1]] > i + 1:
+            n.append("YES")
+        else:
+            n.append("NO")
+
+    for i, p in enumerate(pos_filter_list):
+        dict_pos[p[1]] = i + 1
         json_news = get_news_data(p[1])
-        p.append(json_news[0]["t"])
+        if json_news != []:
+            p.append(json_news[0]["t"])
+        else:
+            p.append("")
+        if json_data["pos"][p[1]] and json_data["pos"][p[1]] > i + 1:
+            p.append("YES")
+        else:
+            p.append("NO")
+
+    dict_data = {"nav":dict_nav, "pos":dict_pos}
+    with open('data.json', 'w') as jsonfile:
+        json.dump(dict_data, jsonfile)
 
     return header_data, nav_filter_list, pos_filter_list
 
@@ -85,14 +111,17 @@ def generate_report(header_data, nav_list, pos_list):
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <style>td {height:10px;text-align: center;}
+        <style>td {height:8px;text-align: center;}
         th{text-align: center;} tbody { height: 80px;width:100%;} </style> </head><body>"""
 
     strPosTableHtml = """<table border="1"><caption class="text-center">Positive Values</caption><thead><tr>
     <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th><th>News</th></tr></thead><tbody>"""
     for prow in pos_list:
-        strProw = """<tr>"""
+        if prow[11] == "YES":
+            strProw = """<tr style="background-color:yellow">"""
+        else:
+            strProw = """<tr>"""
         strProw = strProw + "<td style='color:#1893f2'>"+prow[1]+"</td><td>"+prow[2]+"</td><td style='color:#3fc151'>"+prow[3]+"</td><td>"+prow[6]+"</td>"
         strProw = strProw + "<td>"+format((float(prow[2])-float(prow[6]))/float(prow[6]), '.4f')+"%</td>"
         strProw = strProw + "<td>"+prow[7]+"</td><td>"+prow[8]+"</td>"
@@ -113,7 +142,10 @@ def generate_report(header_data, nav_list, pos_list):
     <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th><th>News</th></tr></thead>"""
     for nrow in nav_list:
-        strNrow = """<tr>"""
+        if nrow[11] == "YES":
+            strNrow = """<tr style="background-color:yellow">"""
+        else:
+            strNrow = """<tr>"""
         strNrow = strNrow + "<td style='color:#1893f2'>"+nrow[1]+"</td><td>"+nrow[2]+"</td><td style='color:#ed5353'>"+nrow[3]+"</td><td>"+nrow[6]+"</td>"
         strNrow = strNrow + "<td>"+format((float(nrow[2])-float(nrow[6]))/float(nrow[6]), '.4f')+"%</td>"
         strNrow = strNrow + "<td>"+nrow[7]+"</td><td>"+nrow[8]+"</td>"
