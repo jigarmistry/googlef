@@ -73,12 +73,24 @@ def get_browser():
     browser.get('https://www.google.com/finance/portfolio?action=view&pid=3&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview')
 
 
+def get_finance_fund_data_phantom():
+    global browser
+    link = browser.find_element_by_link_text('Fundamentals')
+    link.click()
+    html_data = browser.find_element_by_class_name("gf-table").get_attribute('innerHTML')
+    table_data = [[cell.text for cell in row("td")] for row in BeautifulSoup(html_data,"lxml")("tr")]
+    fdata = {}
+    for row in table_data:
+        if len(row) == 11:
+            fdata[row[2]] = {"avg_vol":row[5], "52wkhigh":row[6],"52wklow":row[7]}
+    return fdata
+
+
 def get_finance_data_phantom():
     global browser
     get_browser()
     link = browser.find_element_by_link_text('Overview')
     link.click()
-    time.sleep(5)
 
     html_data = browser.find_element_by_class_name("gf-table").get_attribute('innerHTML')
     table_data = [[cell.text for cell in row("td")] for row in BeautifulSoup(html_data,"lxml")("tr")]
@@ -99,7 +111,9 @@ def get_finance_data_phantom():
     nav_filter_list = fdata[0:15]
     pos_filter_list = sorted(fdata[-15:], key = itemgetter(3) ,reverse=True)
 
-    return nav_filter_list, pos_filter_list
+    dict_fund_data = get_finance_fund_data_phantom()
+
+    return nav_filter_list, pos_filter_list, dict_fund_data
 
 
 def get_finance_data_requests():
