@@ -1,70 +1,9 @@
 import os
-import csv
 import json
-import demjson
-import requests
-from bs4 import BeautifulSoup
-from operator import itemgetter
 
-from gfdata import get_finance_data_phantom, get_finance_data_requests
+from gfdata import get_finance_data_phantom, get_finance_data_requests, get_news_data
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-
-def get_news_data(symbol):
-    news_url = 'http://www.google.com/finance/company_news?output=json&q=' + symbol + '&start=0&num=1'
-    r = requests.get(news_url)
-    article_json = []
-    if r.status_code == 200:
-        content_json = demjson.decode(json.loads(json.dumps(r.text)))
-        if content_json['clusters']:
-            news_json = content_json['clusters']
-            for cluster in news_json:
-                for article in cluster:
-                    if article == 'a':
-                        article_json.extend(cluster[article])
-    return article_json
-
-
-def get_finance_data():
-
-    nav_filter_list, pos_filter_list = get_finance_data_phantom()
-
-    with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
-        json_data = json.load(data_file)
-
-    dict_nav = {}
-    dict_pos = {}
-
-    for i, n in enumerate(nav_filter_list):
-        dict_nav[n[1]] = i + 1
-        json_news = get_news_data(n[1])
-        if json_news != []:
-            n.append(json_news[0]["t"])
-        else:
-            n.append("")
-        if n[1] in json_data["nav"] and json_data["nav"][n[1]] > i + 1:
-            n.append("YES")
-        else:
-            n.append("NO")
-
-    for i, p in enumerate(pos_filter_list):
-        dict_pos[p[1]] = i + 1
-        json_news = get_news_data(p[1])
-        if json_news != []:
-            p.append(json_news[0]["t"])
-        else:
-            p.append("")
-        if p[1] in json_data["pos"] and json_data["pos"][p[1]] > i + 1:
-            p.append("YES")
-        else:
-            p.append("NO")
-
-    dict_data = {"nav":dict_nav, "pos":dict_pos}
-    with open(os.path.join(__location__, 'data.json'), 'w') as jsonfile:
-        json.dump(dict_data, jsonfile)
-
-    return nav_filter_list, pos_filter_list
 
 
 def calculate_day_range(last, high, low):
@@ -75,6 +14,54 @@ def calculate_day_range(last, high, low):
             return "LOW",2
         else:
             return "",3
+
+
+def get_finance_data():
+    nav_filter_list, pos_filter_list = get_finance_data_phantom()
+
+    with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
+        json_data = json.load(data_file)
+
+    dict_nav = {}
+    dict_pos = {}
+
+    for i, n in enumerate(nav_filter_list):
+        dict_nav[n[1]] = i + 1
+        try:
+            json_news = get_news_data(n[1])
+            if json_news != []:
+                n.append(json_news[0]["t"])
+            else:
+                n.append("")
+            if n[1] in json_data["nav"].keys() and json_data["nav"][n[1]] > i + 1:
+                n.append("YES")
+            else:
+                n.append("NO")
+        except e:
+            n.append("")
+            n.append("NO")
+
+    for i, p in enumerate(pos_filter_list):
+        dict_pos[p[1]] = i + 1
+        try:
+            json_news = get_news_data(p[1])
+            if json_news != []:
+                p.append(json_news[0]["t"])
+            else:
+                p.append("")
+            if p[1] in json_data["pos"].keys() and json_data["pos"][p[1]] > i + 1:
+                p.append("YES")
+            else:
+                p.append("NO")
+        except e:
+            p.append("")
+            p.append("NO")
+
+    dict_data = {"nav":dict_nav, "pos":dict_pos}
+    with open(os.path.join(__location__, 'data.json'), 'w') as jsonfile:
+        json.dump(dict_data, jsonfile)
+
+    return nav_filter_list, pos_filter_list
 
 
 def generate_report(nav_list, pos_list):

@@ -43,17 +43,31 @@ def find_between( s, first, last ):
         return ""
 
 
+def get_news_data(symbol):
+    news_url = 'http://www.google.com/finance/company_news?output=json&q=' + symbol + '&start=0&num=1'
+    r = requests.get(news_url)
+    article_json = []
+    if r.status_code == 200:
+        content_json = demjson.decode(json.loads(json.dumps(r.text)))
+        if content_json['clusters']:
+            news_json = content_json['clusters']
+            for cluster in news_json:
+                for article in cluster:
+                    if article == 'a':
+                        article_json.extend(cluster[article])
+    return article_json
+
+
 def get_browser():
     global browser
-    browser.get('https://accounts.google.com/ServiceLogin?service=finance')
-
+    browser.get(url_login)
     emailElem = browser.find_element_by_id('Email')
-    emailElem.send_keys('parasdoshipu@gmail.com')
+    emailElem.send_keys(google_username)
     nextButton = browser.find_element_by_id('next')
     nextButton.click()
     time.sleep(3)
     passwordElem = browser.find_element_by_id('Passwd')
-    passwordElem.send_keys('algoforme12')
+    passwordElem.send_keys(google_password)
     signinButton = browser.find_element_by_id('signIn')
     signinButton.click()
     browser.get('https://www.google.com/finance/portfolio?action=view&pid=3&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview')
