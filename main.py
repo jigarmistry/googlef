@@ -6,30 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 from operator import itemgetter
 
+from gfdata import get_finance_data_phantom, get_finance_data_requests
+
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-url_login = "https://accounts.google.com/ServiceLogin?service=finance"
-url_auth = "https://accounts.google.com/ServiceLoginAuth"
-url_finance_data = "https://www.google.com/finance/portfolio?pid=3&output=csv&action=view&pview=sview&ei=FUQ9WIjWGoavuATfq5LQAw&authuser=0"
-google_username = "parasdoshipu@gmail.com"
-google_password = "algoforme12"
-
-
-class SessionGoogle:
-    def __init__(self, url_login, url_auth, login, pwd):
-        self.ses = requests.session()
-        login_html = self.ses.get(url_login)
-        soup_login = BeautifulSoup(login_html.content,"lxml").find('form').find_all('input')
-        my_dict = {}
-        for u in soup_login:
-            if u.has_attr('value'):
-                my_dict[u['name']] = u['value']
-        my_dict['Email'] = login
-        my_dict['Passwd'] = pwd
-        self.ses.post(url_auth, data=my_dict)
-
-    def get(self, URL):
-        return self.ses.get(URL,stream=True,timeout=None).text
 
 
 def get_news_data(symbol):
@@ -48,14 +27,8 @@ def get_news_data(symbol):
 
 
 def get_finance_data():
-    session = SessionGoogle(url_login, url_auth, google_username, google_password)
-    download_data  = session.get(url_finance_data)
-    csv_data = list(csv.reader(download_data.splitlines(), delimiter=','))
-    header_data = csv_data[0]
-    filter_list = [row for row in csv_data[1:] if row[0]!="" and row[9]!=""]
-    filter_list.sort(key = lambda row: float(row[9]))
-    nav_filter_list = filter_list[0:15]
-    pos_filter_list = sorted(filter_list[-15:], key = itemgetter(9) ,reverse=True)
+
+    nav_filter_list, pos_filter_list = get_finance_data_phantom()
 
     with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
         json_data = json.load(data_file)
@@ -70,7 +43,7 @@ def get_finance_data():
             n.append(json_news[0]["t"])
         else:
             n.append("")
-        if json_data["nav"][n[1]] and json_data["nav"][n[1]] > i + 1:
+        if n[1] in json_data["nav"] and json_data["nav"][n[1]] > i + 1:
             n.append("YES")
         else:
             n.append("NO")
@@ -82,7 +55,7 @@ def get_finance_data():
             p.append(json_news[0]["t"])
         else:
             p.append("")
-        if json_data["pos"][p[1]] and json_data["pos"][p[1]] > i + 1:
+        if p[1] in json_data["pos"] and json_data["pos"][p[1]] > i + 1:
             p.append("YES")
         else:
             p.append("NO")
@@ -91,7 +64,7 @@ def get_finance_data():
     with open(os.path.join(__location__, 'data.json'), 'w') as jsonfile:
         json.dump(dict_data, jsonfile)
 
-    return header_data, nav_filter_list, pos_filter_list
+    return nav_filter_list, pos_filter_list
 
 
 def calculate_day_range(last, high, low):
@@ -104,7 +77,7 @@ def calculate_day_range(last, high, low):
             return "",3
 
 
-def generate_report(header_data, nav_list, pos_list):
+def generate_report(nav_list, pos_list):
     """['Name', 'Symbol', 'Last price', 'Change', 'Mkt cap', 'Volume', 'Open', 'High', 'Low', "Day's gain"]"""
 
     strHtml = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><title>Report</title>
@@ -168,5 +141,5 @@ def generate_report(header_data, nav_list, pos_list):
 
 
 if __name__ == "__main__":
-    header_data, nav_list, pos_list = get_finance_data()
-    generate_report(header_data, nav_list, pos_list)
+    nav_list, pos_list = get_finance_data()
+    generate_report(nav_list, pos_list)
