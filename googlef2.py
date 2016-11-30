@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from operator import itemgetter
 
+from napi import getNews
+
 url_login = "https://accounts.google.com/ServiceLogin?service=finance"
 url_auth = "https://accounts.google.com/ServiceLoginAuth"
 url_finance_data = "https://www.google.com/finance/portfolio?pid=3&output=csv&action=view&pview=sview&ei=FUQ9WIjWGoavuATfq5LQAw&authuser=0"
@@ -37,6 +39,12 @@ def get_finance_data():
     filter_list.sort(key = lambda row: float(row[9]))
     nav_filter_list = filter_list[0:15]
     pos_filter_list = sorted(filter_list[-15:], key = itemgetter(9) ,reverse=True)
+
+    for n in nav_filter_list:
+        json_news = json.dumps(getNews(n[1]))
+        n.append(json_news[0]["sp"])
+    print nav_filter_list    
+
     return header_data, nav_filter_list, pos_filter_list
 
 
@@ -70,9 +78,9 @@ def generate_report(header_data, nav_list, pos_list):
         strProw = strProw + "<td>"+prow[7]+"</td><td>"+prow[8]+"</td>"
         value,st = calculate_day_range(prow[2], prow[7], prow[8])
         if st == 1:
-            strProw = strProw + "<td style='background-color:#3fc151;color:green'>"+value+"</td>"
+            strProw = strProw + "<td style='background-color:#99e5a2;color:green'>"+value+"</td>"
         elif st == 2:
-            strProw = strProw + "<td style='background-color:#ed5353;color:red'>"+value+"</td>"
+            strProw = strProw + "<td style='background-color:#ef8b8b;color:red'>"+value+"</td>"
         else:
             strProw = strProw + "<td></td>"              
         strProw = strProw + "</tr>"
@@ -90,9 +98,9 @@ def generate_report(header_data, nav_list, pos_list):
         strNrow = strNrow + "<td>"+nrow[7]+"</td><td>"+nrow[8]+"</td>"
         value,st = calculate_day_range(nrow[2], nrow[7], nrow[8])
         if st == 1:
-            strNrow = strNrow + "<td style='background-color:#3fc151;color:green'>"+value+"</td>"
+            strNrow = strNrow + "<td style='background-color:#99e5a2;color:green'>"+value+"</td>"
         elif st == 2:
-            strNrow = strNrow + "<td style='background-color:#ed5353;color:red'>"+value+"</td>"
+            strNrow = strNrow + "<td style='background-color:#ef8b8b;color:red'>"+value+"</td>"
         else:
             strNrow = strNrow + "<td></td>"
         strNrow = strNrow + "</tr>"
