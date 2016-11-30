@@ -47,13 +47,16 @@ def generate_report(header_data, nav_list, pos_list):
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    </head><body><div class="container">"""
-    strNavTableHtml = """<table class="table table-bordered"><caption class="text-center">Nagative Values</caption><thead><tr>
-    <th>Name</th><th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
+        <style>td {height:10px; width:150px;text-align: center;}
+        th{text-align: center;}
+tbody { height: 100px;width:100%;} </style>
+    </head><body>"""
+    strNavTableHtml = """<table border="1"><caption class="text-center">Nagative Values</caption><thead><tr>
+    <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th></tr></thead>"""
     for nrow in nav_list:
-        strNrow = """<tr class="danger">"""
-        strNrow = strNrow + "<td>"+nrow[0]+"</td><td>"+nrow[1]+"</td><td>"+nrow[2]+"</td><td>"+nrow[3]+"</td><td>"+nrow[6]+"</td>"
+        strNrow = """<tr>"""
+        strNrow = strNrow + "<td style='color:#1893f2'>"+nrow[1]+"</td><td>"+nrow[2]+"</td><td style='color:#ed5353'>"+nrow[3]+"</td><td>"+nrow[6]+"</td>"
         strNrow = strNrow + "<td>"+format((float(nrow[2])-float(nrow[6]))/float(nrow[6]), '.4f')+"%</td>"
         strNrow = strNrow + "<td>"+nrow[7]+"</td><td>"+nrow[8]+"</td><td></td>"
         strNrow = strNrow + "</tr>"
@@ -61,12 +64,12 @@ def generate_report(header_data, nav_list, pos_list):
     strNavTableHtml = strNavTableHtml + "</tbody></table>"
     strHtml = strHtml + strNavTableHtml
 
-    strPosTableHtml = """<br><table class="table table-bordered"><caption class="text-center">Positive Values</caption><thead><tr>
-    <th>Name</th><th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
+    strPosTableHtml = """<table border="1"><caption class="text-center">Positive Values</caption><thead><tr>
+    <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th></tr></thead><tbody>"""
     for prow in pos_list:
-        strProw = """<tr class="success">"""
-        strProw = strProw + "<td>"+prow[0]+"</td><td>"+prow[1]+"</td><td>"+prow[2]+"</td><td>"+prow[3]+"</td><td>"+prow[6]+"</td>"
+        strProw = """<tr>"""
+        strProw = strProw + "<td style='color:#1893f2'>"+prow[1]+"</td><td>"+prow[2]+"</td><td style='color:#3fc151'>"+prow[3]+"</td><td>"+prow[6]+"</td>"
         strProw = strProw + "<td>"+format((float(prow[2])-float(prow[6]))/float(prow[6]), '.4f')+"%</td>"
         strProw = strProw + "<td>"+prow[7]+"</td><td>"+prow[8]+"</td><td></td>"
         strProw = strProw + "</tr>"
