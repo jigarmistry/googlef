@@ -1,3 +1,4 @@
+import os
 import csv
 import json
 import demjson
@@ -5,15 +6,13 @@ import requests
 from bs4 import BeautifulSoup
 from operator import itemgetter
 
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 url_login = "https://accounts.google.com/ServiceLogin?service=finance"
 url_auth = "https://accounts.google.com/ServiceLoginAuth"
 url_finance_data = "https://www.google.com/finance/portfolio?pid=3&output=csv&action=view&pview=sview&ei=FUQ9WIjWGoavuATfq5LQAw&authuser=0"
 google_username = "parasdoshipu@gmail.com"
 google_password = "algoforme12"
-
-nav_filter_list_old = []
-pos_filter_list_old = []
 
 
 class SessionGoogle:
@@ -39,11 +38,12 @@ def get_news_data(symbol):
     article_json = []
     if r.status_code == 200:
         content_json = demjson.decode(json.loads(json.dumps(r.text)))
-        news_json = content_json['clusters']
-        for cluster in news_json:
-            for article in cluster:
-                if article == 'a':
-                    article_json.extend(cluster[article])
+        if content_json['clusters']:
+            news_json = content_json['clusters']
+            for cluster in news_json:
+                for article in cluster:
+                    if article == 'a':
+                        article_json.extend(cluster[article])
     return article_json
 
 
@@ -57,7 +57,7 @@ def get_finance_data():
     nav_filter_list = filter_list[0:15]
     pos_filter_list = sorted(filter_list[-15:], key = itemgetter(9) ,reverse=True)
 
-    with open('data.json', 'r') as data_file:
+    with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
         json_data = json.load(data_file)
 
     dict_nav = {}
@@ -88,7 +88,7 @@ def get_finance_data():
             p.append("NO")
 
     dict_data = {"nav":dict_nav, "pos":dict_pos}
-    with open('data.json', 'w') as jsonfile:
+    with open(os.path.join(__location__, 'data.json'), 'w') as jsonfile:
         json.dump(dict_data, jsonfile)
 
     return header_data, nav_filter_list, pos_filter_list
@@ -119,7 +119,7 @@ def generate_report(header_data, nav_list, pos_list):
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th><th>News</th></tr></thead><tbody>"""
     for prow in pos_list:
         if prow[11] == "YES":
-            strProw = """<tr style="background-color:yellow">"""
+            strProw = """<tr style="background-color:#ede980">"""
         else:
             strProw = """<tr>"""
         strProw = strProw + "<td style='color:#1893f2'>"+prow[1]+"</td><td>"+prow[2]+"</td><td style='color:#3fc151'>"+prow[3]+"</td><td>"+prow[6]+"</td>"
@@ -143,7 +143,7 @@ def generate_report(header_data, nav_list, pos_list):
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th><th>News</th></tr></thead>"""
     for nrow in nav_list:
         if nrow[11] == "YES":
-            strNrow = """<tr style="background-color:yellow">"""
+            strNrow = """<tr style="background-color:#ede980">"""
         else:
             strNrow = """<tr>"""
         strNrow = strNrow + "<td style='color:#1893f2'>"+nrow[1]+"</td><td>"+nrow[2]+"</td><td style='color:#ed5353'>"+nrow[3]+"</td><td>"+nrow[6]+"</td>"
@@ -159,11 +159,11 @@ def generate_report(header_data, nav_list, pos_list):
         strNrow = strNrow + "<td style='text-align:left;'>"+nrow[10]+"</td>"
         strNrow = strNrow + "</tr>"
         strNavTableHtml = strNavTableHtml + strNrow
-    strNavTableHtml = strNavTableHtml + "</tbody></table>"
+    strNavTableHtml = strNavTableHtml + "</tbody></table><br>"
     strHtml = strHtml + strNavTableHtml
 
     strHtml = strHtml + "</body></html>"
-    html_file = open("report.html","w")
+    html_file = open(os.path.join(__location__, 'report.html'),'w')
     html_file.write(str(strHtml))
 
 
