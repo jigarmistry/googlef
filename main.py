@@ -17,7 +17,7 @@ def calculate_day_range(last, high, low):
 
 
 def get_finance_data():
-    nav_filter_list, pos_filter_list, dict_fund_data = get_finance_data_phantom()
+    nav_filter_list, pos_filter_list = get_finance_data_phantom()
 
     with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
         json_data = json.load(data_file)
@@ -61,10 +61,10 @@ def get_finance_data():
     with open(os.path.join(__location__, 'data.json'), 'w') as jsonfile:
         json.dump(dict_data, jsonfile)
 
-    return nav_filter_list, pos_filter_list, dict_fund_data
+    return nav_filter_list, pos_filter_list
 
 
-def generate_report(nav_list, pos_list, dict_fund_data):
+def generate_report(nav_list, pos_list):
     """['Name', 'Symbol', 'Last price', 'Change', 'Mkt cap', 'Volume', 'Open', 'High', 'Low', "Day's gain"]"""
 
     strHtml = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><title>Report</title>
@@ -75,10 +75,9 @@ def generate_report(nav_list, pos_list, dict_fund_data):
         th{text-align: center;} tbody { height: 80px;width:100%;} </style> </head><body style="margin-left:20px;">"""
 
     strPosTableHtml = """<table border="1"><caption class="text-center">Positive Values</caption><thead><tr>
-    <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
-    <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th>
-    <th>High5</th><th>Low5</th><th>Level</th><th>Today's Vol</th>
-    <th>Avg Vol</th><th>Unusual Vol</th><th>News</th></tr></thead><tbody>"""
+    <th> Symbol </th><th> Last Price </th><th> Change </th><th> Open </th>
+    <th> % Net Change </th><th> High </th><th> Low </th><th> Day's Range </th>
+    <th> News </th></tr></thead><tbody>"""
 
     for prow in pos_list:
         if prow[11] == "YES":
@@ -86,7 +85,7 @@ def generate_report(nav_list, pos_list, dict_fund_data):
         else:
             strProw = """<tr>"""
         strProw = strProw + "<td style='color:#1893f2'>"+prow[1]+"</td><td>"+prow[2]+"</td><td style='color:#3fc151'>"+prow[3]+"</td><td>"+prow[6]+"</td>"
-        strProw = strProw + "<td>"+format(((float(prow[2])-float(prow[6]))/float(prow[6]))*100, '.4f')+"%</td>"
+        strProw = strProw + "<td>"+format(((float(prow[2])-float(prow[6]))/float(prow[6]))*100, '.2f')+"%</td>"
         strProw = strProw + "<td>"+prow[7]+"</td><td>"+prow[8]+"</td>"
         value,st = calculate_day_range(prow[2], prow[7], prow[8])
         if st == 1:
@@ -95,12 +94,6 @@ def generate_report(nav_list, pos_list, dict_fund_data):
             strProw = strProw + "<td style='background-color:#ef8b8b;color:red'>"+value+"</td>"
         else:
             strProw = strProw + "<td></td>"
-        strProw = strProw + "<td>"+dict_fund_data[prow[1]]['52wkhigh']+"</td>"
-        strProw = strProw + "<td>"+dict_fund_data[prow[1]]['52wklow']+"</td>"
-        strProw = strProw + "<td></td>"
-        strProw = strProw + "<td>"+prow[5]+"</td>"
-        strProw = strProw + "<td>"+dict_fund_data[prow[1]]['avg_vol']+"</td>"
-        strProw = strProw + "<td></td>"
         strProw = strProw + "<td style='text-align:left;'>"+prow[10]+"</td>"
         strProw = strProw + "</tr>"
         strPosTableHtml = strPosTableHtml + strProw
@@ -108,10 +101,9 @@ def generate_report(nav_list, pos_list, dict_fund_data):
     strHtml = strHtml + strPosTableHtml
 
     strNavTableHtml = """<table border="1"><caption class="text-center">Nagative Values</caption><thead><tr>
-    <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
-    <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th>
-    <th>High5</th><th>Low5</th><th>Level</th><th>Today's Vol</th>
-    <th>Avg Vol</th><th>Unusual Vol</th><th>News</th></tr></thead>"""
+    <th> Symbol </th><th> Last Price </th><th> Change </th><th> Open </th>
+    <th> % Net Change </th><th> High </th><th> Low </th><th> Day's Range </th>
+    <th> News </th></tr></thead><tbody>"""
 
     for nrow in nav_list:
         if nrow[11] == "YES":
@@ -119,7 +111,7 @@ def generate_report(nav_list, pos_list, dict_fund_data):
         else:
             strNrow = """<tr>"""
         strNrow = strNrow + "<td style='color:#1893f2'>"+nrow[1]+"</td><td>"+nrow[2]+"</td><td style='color:#ed5353'>"+nrow[3]+"</td><td>"+nrow[6]+"</td>"
-        strNrow = strNrow + "<td>"+format(((float(nrow[2])-float(nrow[6]))/float(nrow[6]))*100, '.4f')+"%</td>"
+        strNrow = strNrow + "<td>"+format(((float(nrow[2])-float(nrow[6]))/float(nrow[6]))*100, '.2f')+"%</td>"
         strNrow = strNrow + "<td>"+nrow[7]+"</td><td>"+nrow[8]+"</td>"
         value,st = calculate_day_range(nrow[2], nrow[7], nrow[8])
         if st == 1:
@@ -128,12 +120,6 @@ def generate_report(nav_list, pos_list, dict_fund_data):
             strNrow = strNrow + "<td style='background-color:#ef8b8b;color:red'>"+value+"</td>"
         else:
             strNrow = strNrow + "<td></td>"
-        strNrow = strNrow + "<td>"+dict_fund_data[nrow[1]]['52wkhigh']+"</td>"
-        strNrow = strNrow + "<td>"+dict_fund_data[nrow[1]]['52wklow']+"</td>"
-        strNrow = strNrow + "<td></td>"
-        strNrow = strNrow + "<td>"+nrow[5]+"</td>"
-        strNrow = strNrow + "<td>"+dict_fund_data[nrow[1]]['avg_vol']+"</td>"
-        strNrow = strNrow + "<td></td>"
         strNrow = strNrow + "<td style='text-align:left;'>"+nrow[10]+"</td>"
         strNrow = strNrow + "</tr>"
         strNavTableHtml = strNavTableHtml + strNrow
@@ -146,5 +132,5 @@ def generate_report(nav_list, pos_list, dict_fund_data):
 
 
 if __name__ == "__main__":
-    nav_list, pos_list, dict_fund_data = get_finance_data()
-    generate_report(nav_list, pos_list, dict_fund_data)
+    nav_list, pos_list = get_finance_data()
+    generate_report(nav_list, pos_list)

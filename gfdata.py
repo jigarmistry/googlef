@@ -111,9 +111,9 @@ def get_finance_data_phantom():
     nav_filter_list = fdata[0:15]
     pos_filter_list = sorted(fdata[-15:], key = itemgetter(3) ,reverse=True)
 
-    dict_fund_data = get_finance_fund_data_phantom()
+    # dict_fund_data = get_finance_fund_data_phantom()
 
-    return nav_filter_list, pos_filter_list, dict_fund_data
+    return nav_filter_list, pos_filter_list
 
 
 def get_finance_data_requests():

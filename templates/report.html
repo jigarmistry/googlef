@@ -3,9 +3,26 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <style>td {height:8px;text-align: center;}
-        th{text-align: center;} tbody { height: 80px;width:100%;} </style>
+        th{text-align: center;} tbody { height: 80px;width:100%;}
+        
+        .loader {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    visibility: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} </style>
         
          <script>
+         var $loading = $('#loader').hide();
+          $loading.hide();
             function LoadFinance()
             {
                 $(function() {
@@ -26,7 +43,9 @@
             // setInterval( LoadFinance, 10000 );
          </script>   
 
-         </head><body style="margin-left:20px;"><table border="1"><caption class="text-center">Positive Values</caption><thead><tr>
+         </head><body style="margin-left:20px;">
+             <div class="loader"></div>
+             <table border="1"><caption class="text-center">Positive Values</caption><thead><tr>
     <th>Symbol</th><th>Last Price</th><th>Change</th><th>Open</th>
     <th>% Net Change</th><th>High</th><th>Low</th><th>Day's Range</th>
     <th>High5</th><th>Low5</th><th>Level</th><th>Today's Vol</th>
