@@ -61,15 +61,21 @@ def get_news_data(symbol):
 def get_browser():
     global browser
     browser.get(url_login)
-    emailElem = browser.find_element_by_id('Email')
-    emailElem.send_keys(google_username)
-    nextButton = browser.find_element_by_id('next')
-    nextButton.click()
-    time.sleep(3)
-    passwordElem = browser.find_element_by_id('Passwd')
-    passwordElem.send_keys(google_password)
-    signinButton = browser.find_element_by_id('signIn')
-    signinButton.click()
+    try:
+        passwordElem = browser.find_element_by_id('Passwd')
+        passwordElem.send_keys(google_password)
+        signinButton = browser.find_element_by_id('signIn')
+        signinButton.click()
+    except Exception as e:
+        emailElem = browser.find_element_by_id('Email')
+        emailElem.send_keys(google_username)
+        nextButton = browser.find_element_by_id('next')
+        nextButton.click()
+        time.sleep(2)
+        passwordElem = browser.find_element_by_id('Passwd')
+        passwordElem.send_keys(google_password)
+        signinButton = browser.find_element_by_id('signIn')
+        signinButton.click()
     browser.get('https://www.google.com/finance/portfolio?action=view&pid=3&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview')
 
 

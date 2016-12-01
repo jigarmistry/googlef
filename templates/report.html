@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     <style>
         td {
             height: 8px;
@@ -25,44 +26,85 @@
             height: 80px;
             width: 100%;
         }
+        
+        .loader {
+            margin-top: 10px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <script>
         $(function() {
+            var $loading = $('.loader').hide();
             function LoadFinance() {
+                $loading.show();
                 $.getJSON( "/api", function( data ) {
-
+                    $loading.hide();
                     $.each( data, function( key, val ) {
-                        console.log(key);
                         var tbodyid = "#"+key;
-                        var newRowContent = "<tr><td style='color:#1893f2'>BERY</td>
-                        <td>49.94</td>
-                        <td style='color:#3fc151'>8.68</td>
-                        <td>47.44</td>
-                        <td>5.2698%</td>
-                        <td>50.2585</td>
-                        <td>47.39</td>
-                        <td>HIGH</td>
-                        <td style='text-align:left;'>Stock Mover of The Day: What&#39;s Next for Berry Plastics Group Inc After Today&#39;s ...</td></tr>";
                         $(tbodyid).empty();
-                        $(tbodyid).append(newRowContent);
                         $.each(val, function(k,kval){
-                            var newRowContent = "<tr><td style='color:#1893f2'>"+kval.symbol+"</td>";
-                            newRowContent += "<td>"+kval.last_price+"</td>"
-
-                            console.log(kval.change);
+                            var newRowContent = "<tr>";
+                            if (kval.is_rank == "YES"){
+                               var newRowContent = "<tr style='background-color:#ede980'>";
+                            }
+                            newRowContent += "<td style='color:#1893f2'>"+kval.symbol+"</td>";
+                            newRowContent += "<td>"+kval.last_price+"</td>";
+                            if (key == "nav"){
+                                newRowContent += "<td style='color:#ed5353'>"+kval.change+"</td>"
+                            }
+                            else{
+                                newRowContent += "<td style='color:#3fc151'>"+kval.change+"</td>"
+                            }
+                            newRowContent += "<td>"+kval.open+"</td>";
+                            newRowContent += "<td>"+kval.net_change+"%</td>";
+                            newRowContent += "<td>"+kval.high+"</td>";
+                            newRowContent += "<td>"+kval.low+"</td>";
+                            if (kval.day_range.st == 1){
+                                newRowContent += "<td style='background-color:#99e5a2;color:green'>"+kval.day_range.value+"</td>";
+                            }
+                            else if (kval.day_range.st == 2){
+                                newRowContent += "<td style='background-color:#ef8b8b;color:red'>"+kval.day_range.value+"</td>";
+                            }
+                            else{
+                                newRowContent += "<td>"+kval.day_range.value+"</td>";
+                            }
+                            newRowContent += "<td style='text-align:left;'>"+kval.news+"</td>";
+                            $(tbodyid).append(newRowContent);
                         });
                     });
-
-
                 });
             }
-            LoadFinance();
-            // setInterval( LoadFinance, 10000 );
+            // LoadFinance();
+            setInterval( LoadFinance, 90000 );
         });
     </script>
 </head>
 
 <body>
+    <div class="loader"></div>
     <table border="1" class="pos-table">
         <caption class="text-center">Positive Values</caption>
         <thead>
