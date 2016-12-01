@@ -3,9 +3,9 @@ from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
-@app.route("/")
-def report():
-    return render_template('report.html')
+@app.route("/<pid>")
+def report(pid=1):
+    return render_template('report.html',pid=pid)
 
 @app.route("/api")
 def report_api():

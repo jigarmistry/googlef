@@ -13,6 +13,9 @@
             height: 8px;
             text-align: center;
         }
+        .width-cl {
+            width:55px;
+        }
         
         body {
             margin-left: 20px;
@@ -60,6 +63,7 @@
             var $loading = $('.loader').hide();
             function LoadFinance() {
                 $loading.show();
+                console.log({{pid}});
                 $.getJSON( "/api", function( data ) {
                     $loading.hide();
                     $.each( data, function( key, val ) {
@@ -70,35 +74,37 @@
                             if (kval.is_rank == "YES"){
                                var newRowContent = "<tr style='background-color:#ede980'>";
                             }
-                            newRowContent += "<td style='color:#1893f2'>"+kval.symbol+"</td>";
+                            newRowContent += "<td style='color:#1893f2;width:55px;'>"+kval.symbol+"</td>";
                             newRowContent += "<td>"+kval.last_price+"</td>";
                             if (key == "nav"){
-                                newRowContent += "<td style='color:#ed5353'>"+kval.change+"</td>"
+                                newRowContent += "<td style='color:#ed5353;width:55px;'>"+kval.change+"</td>"
                             }
                             else{
-                                newRowContent += "<td style='color:#3fc151'>"+kval.change+"</td>"
+                                newRowContent += "<td style='color:#3fc151;width:55px;'>"+kval.change+"</td>"
                             }
-                            newRowContent += "<td>"+kval.open+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.open+"</td>";
                             newRowContent += "<td>"+kval.net_change+"%</td>";
-                            newRowContent += "<td>"+kval.high+"</td>";
-                            newRowContent += "<td>"+kval.low+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.high+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.low+"</td>";
                             if (kval.day_range.st == 1){
-                                newRowContent += "<td style='background-color:#99e5a2;color:green'>"+kval.day_range.value+"</td>";
+                                newRowContent += "<td style='background-color:#99e5a2;color:green;'>"+kval.day_range.value+"</td>";
                             }
                             else if (kval.day_range.st == 2){
-                                newRowContent += "<td style='background-color:#ef8b8b;color:red'>"+kval.day_range.value+"</td>";
+                                newRowContent += "<td style='background-color:#ef8b8b;color:red;'>"+kval.day_range.value+"</td>";
                             }
                             else{
                                 newRowContent += "<td>"+kval.day_range.value+"</td>";
                             }
-                            newRowContent += "<td style='text-align:left;'>"+kval.news+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.news.date+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.news.time+"</td>";
+                            newRowContent += "<td style='text-align:left;'><a href="+kval.news.link+" target='_blank'>"+kval.news.title+"</a></td>";
                             $(tbodyid).append(newRowContent);
                         });
                     });
                 });
             }
             LoadFinance();
-            setInterval( LoadFinance, 90000 );
+            setInterval( LoadFinance, 70000 );
         });
     </script>
 </head>
@@ -117,6 +123,8 @@
                 <th>High</th>
                 <th>Low</th>
                 <th>Day's Range</th>
+                <th>Date</th>
+                <th>Time</th>
                 <th>News</th>
             </tr>
         </thead>
@@ -135,6 +143,8 @@
                 <th>High</th>
                 <th>Low</th>
                 <th>Day's Range</th>
+                <th>Date</th>
+                <th>Time</th>
                 <th>News</th>
             </tr>
         </thead>

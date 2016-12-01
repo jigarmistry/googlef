@@ -1,0 +1,152 @@
+<html lang="en" class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths"><head>
+    <meta charset="utf-8">
+    <title>Report</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+    <style>
+        td {
+            height: 8px;
+            text-align: center;
+        }
+        .width-cl {
+            width:55px;
+        }
+        
+        body {
+            margin-left: 20px;
+        }
+        
+        th {
+            text-align: center;
+        }
+        
+        tbody {
+            height: 80px;
+            width: 100%;
+        }
+        
+        .loader {
+            margin-top: 10px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        $(function() {
+            var $loading = $('.loader').hide();
+            function LoadFinance() {
+                $loading.show();
+                $.getJSON( "/api", function( data ) {
+                    $loading.hide();
+                    $.each( data, function( key, val ) {
+                        var tbodyid = "#"+key;
+                        $(tbodyid).empty();
+                        $.each(val, function(k,kval){
+                            console.log(kval);
+                            var newRowContent = "<tr>";
+                            if (kval.is_rank == "YES"){
+                               var newRowContent = "<tr style='background-color:#ede980'>";
+                            }
+                            newRowContent += "<td style='color:#1893f2;width:55px;'>"+kval.symbol+"</td>";
+                            newRowContent += "<td>"+kval.last_price+"</td>";
+                            if (key == "nav"){
+                                newRowContent += "<td style='color:#ed5353;width:55px;'>"+kval.change+"</td>"
+                            }
+                            else{
+                                newRowContent += "<td style='color:#3fc151;width:55px;'>"+kval.change+"</td>"
+                            }
+                            newRowContent += "<td class='width-cl'>"+kval.open+"</td>";
+                            newRowContent += "<td>"+kval.net_change+"%</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.high+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.low+"</td>";
+                            if (kval.day_range.st == 1){
+                                newRowContent += "<td style='background-color:#99e5a2;color:green;'>"+kval.day_range.value+"</td>";
+                            }
+                            else if (kval.day_range.st == 2){
+                                newRowContent += "<td style='background-color:#ef8b8b;color:red;'>"+kval.day_range.value+"</td>";
+                            }
+                            else{
+                                newRowContent += "<td>"+kval.day_range.value+"</td>";
+                            }
+                            newRowContent += "<td class='width-cl'>"+kval.news.date+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.news.time+"</td>";
+                            newRowContent += "<td style='text-align:left;'><a href="+kval.news.link+" target='_blank'>"+kval.news.title+"</a></td>";
+                            $(tbodyid).append(newRowContent);
+                        });
+                    });
+                });
+            }
+            LoadFinance();
+            setInterval( LoadFinance, 70000 );
+        });
+    </script>
+<script type="text/javascript" src="chrome-extension://bfbmjmiodbnnpllbbbfblcplfjjepjdn/js/injected.js"></script></head>
+
+<body>
+    <div class="loader" style="display: none;"></div>
+    <table border="1" class="pos-table">
+        <caption class="text-center">Positive Values</caption>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Last Price</th>
+                <th>Change</th>
+                <th>Open</th>
+                <th>% Net Change</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Day's Range</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>News</th>
+            </tr>
+        </thead>
+        <tbody id="pos"><tr><td style="color:#1893f2;width:55px;">SKX</td><td>25.04</td><td style="color:#3fc151;width:55px;">9.92</td><td class="width-cl">24.74</td><td>1.21%</td><td class="width-cl">25.48</td><td class="width-cl">24.65</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">18:30</td><td style="text-align:left;"><a href="https://www.thecerbatgem.com/2016/12/01/skechers-usa-inc-skx-rating-increased-to-strong-buy-at-vetr-inc.html" target="_blank">Skechers USA Inc. (SKX) Rating Increased to Strong-Buy at Vetr Inc.</a></td></tr><tr><td style="color:#1893f2;width:55px;">UGAZ</td><td>29.36</td><td style="color:#3fc151;width:55px;">8.02</td><td class="width-cl">27.49</td><td>6.80%</td><td class="width-cl">30.35</td><td class="width-cl">27.36</td><td></td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr><td style="color:#1893f2;width:55px;">DAN</td><td>17.86</td><td style="color:#3fc151;width:55px;">5.71</td><td class="width-cl">17.95</td><td>-0.50%</td><td class="width-cl">17.95</td><td class="width-cl">17.62</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">16:36</td><td style="text-align:left;"><a href="http://www.insidermonkey.com/blog/should-you-avoid-dana-inc-dan-492864/" target="_blank">Should You Avoid Dana Inc (DAN)?</a></td></tr><tr><td style="color:#1893f2;width:55px;">AXL</td><td>16.53</td><td style="color:#3fc151;width:55px;">5.56</td><td class="width-cl">16.39</td><td>0.85%</td><td class="width-cl">16.73</td><td class="width-cl">16.27</td><td></td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">RRC</td><td>36.77</td><td style="color:#3fc151;width:55px;">4.52</td><td class="width-cl">36.45</td><td>0.88%</td><td class="width-cl">37</td><td class="width-cl">36.12</td><td></td><td class="width-cl">30-Nov</td><td class="width-cl">04:37</td><td style="text-align:left;"><a href="https://www.thecerbatgem.com/2016/11/29/oppenheimer-co-inc-has-3837000-position-in-range-resources-corp-rrc.html" target="_blank">Oppenheimer &amp; Co. Inc. Has $3837000 Position in Range Resources Corp. (RRC)</a></td></tr><tr><td style="color:#1893f2;width:55px;">TVIX</td><td>18.03</td><td style="color:#3fc151;width:55px;">4.28</td><td class="width-cl">17.09</td><td>5.50%</td><td class="width-cl">18.27</td><td class="width-cl">16.99</td><td></td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">BRS</td><td>16.23</td><td style="color:#3fc151;width:55px;">3.97</td><td class="width-cl">16.23</td><td>0.00%</td><td class="width-cl">16.47</td><td class="width-cl">16.01</td><td></td><td class="width-cl">30-Nov</td><td class="width-cl">23:15</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/30/todays-price-action-bristow-group-inc-cant-burn-your-long-portfolio-has-another-strong-session/" target="_blank">Today's Price Action: Bristow Group Inc Can't Burn Your Long Portfolio. Has ...</a></td></tr><tr><td style="color:#1893f2;width:55px;">DOV</td><td>75.44</td><td style="color:#3fc151;width:55px;">3.84</td><td class="width-cl">73.48</td><td>2.67%</td><td class="width-cl">76.59</td><td class="width-cl">73.48</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">19:16</td><td style="text-align:left;"><a href="http://www.fool.com/investing/2016/12/01/dover-corporation-still-looks-like-a-good-value.aspx" target="_blank">Dover Corporation Still Looks Like a Good Value</a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">DUST</td><td>56.61</td><td style="color:#3fc151;width:55px;">3.80</td><td class="width-cl">56.5</td><td>0.19%</td><td class="width-cl">56.99</td><td class="width-cl">55.86</td><td></td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr><td style="color:#1893f2;width:55px;">FANG</td><td>111.89</td><td style="color:#3fc151;width:55px;">3.75</td><td class="width-cl">111.18</td><td>0.64%</td><td class="width-cl">112.5</td><td class="width-cl">110.64</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">19:46</td><td style="text-align:left;"><a href="http://www.newsoracle.com/2016/12/01/most-recent-analysts-ratings-diamondback-energy-inc-nasdaqfang/" target="_blank">Most Recent analysts Ratings: Diamondback Energy, Inc. (NASDAQ:FANG)</a></td></tr><tr><td style="color:#1893f2;width:55px;">DO</td><td>18.66</td><td style="color:#3fc151;width:55px;">3.27</td><td class="width-cl">18.9</td><td>-1.27%</td><td class="width-cl">18.92</td><td class="width-cl">18.49</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">00:05</td><td style="text-align:left;"><a href="http://www.foxbusiness.com/markets/2016/11/30/here-why-seadrill-ltd-noble-corporation-and-diamond-offshore-drilling-inc.html" target="_blank">Here's Why Seadrill Ltd, Noble Corporation, and Diamond Offshore Drilling Inc ...</a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">F</td><td>12.35</td><td style="color:#3fc151;width:55px;">3.26</td><td class="width-cl">12.23</td><td>0.98%</td><td class="width-cl">12.35</td><td class="width-cl">12.19</td><td style="background-color:#99e5a2;color:green;">HIGH</td><td class="width-cl">30-Nov</td><td class="width-cl">00:26</td><td style="text-align:left;"><a href="http://www.fool.com/investing/2016/11/29/why-investors-shouldnt-overlook-ford-motor-company.aspx" target="_blank">Why Investors Shouldn't Overlook Ford Motor Company's Fiesta</a></td></tr><tr><td style="color:#1893f2;width:55px;">RES</td><td>20.73</td><td style="color:#3fc151;width:55px;">3.24</td><td class="width-cl">20.63</td><td>0.48%</td><td class="width-cl">20.86</td><td class="width-cl">20.61</td><td></td><td class="width-cl">30-Nov</td><td class="width-cl">21:09</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/30/todays-price-action-could-rpc-inc-see-a-reversal-after-breaking-its-52-week-high/" target="_blank">Today's Price Action: Could RPC, Inc. See a Reversal After Breaking Its 52 ...</a></td></tr><tr><td style="color:#1893f2;width:55px;">BLUE</td><td>75.75</td><td style="color:#3fc151;width:55px;">25.51</td><td class="width-cl">74.3</td><td>1.95%</td><td class="width-cl">76.75</td><td class="width-cl">73.5</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">03:08</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/30/notable-reporting-today-bluebird-bio-inc-stock-crashes/" target="_blank">Notable Reporting: Today bluebird bio Inc Stock Crashes</a></td></tr><tr><td style="color:#1893f2;width:55px;">AR</td><td>25.22</td><td style="color:#3fc151;width:55px;">2.98</td><td class="width-cl">25.25</td><td>-0.12%</td><td class="width-cl">25.22</td><td class="width-cl">24.98</td><td style="background-color:#99e5a2;color:green;">HIGH</td><td class="width-cl">30-Nov</td><td class="width-cl">23:00</td><td style="text-align:left;"><a href="http://factsreporter.com/2016/11/30/news-roundup-antero-resources-corporation-nysear-amazon-com-inc-nasdaqamzn/" target="_blank">News Roundup: Antero Resources Corporation (NYSE:AR), Amazon.com, Inc. (NASDAQ ...</a></td></tr></tbody>
+    </table>
+    <table border="1" class="nav-table">
+        <caption class="text-center">Nagative Values</caption>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Last Price</th>
+                <th>Change</th>
+                <th>Open</th>
+                <th>% Net Change</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Day's Range</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>News</th>
+            </tr>
+        </thead>
+        <tbody id="nav"><tr><td style="color:#1893f2;width:55px;">EXPR</td><td>11.23</td><td style="color:#ed5353;width:55px;">-15.91</td><td class="width-cl">11.04</td><td>1.72%</td><td class="width-cl">11.72</td><td class="width-cl">10.83</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">19:19</td><td style="text-align:left;"><a href="http://postregistrar.com/2016/12/01/express-inc-nyseexpr-can-the-stock-surprise-in-next-earnings/" target="_blank">Express, Inc. (NYSE:EXPR): Can the Stock Surprise in Next Earnings?</a></td></tr><tr><td style="color:#1893f2;width:55px;">GES</td><td>13.41</td><td style="color:#ed5353;width:55px;">-12.47</td><td class="width-cl">13.34</td><td>0.52%</td><td class="width-cl">13.975</td><td class="width-cl">13.34</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">02:49</td><td style="text-align:left;"><a href="http://www.prnewswire.com/news-releases/guess-inc-reports-third-quarter-results-300370703.html" target="_blank">Guess?, Inc. Reports Third Quarter Results</a></td></tr><tr><td style="color:#1893f2;width:55px;">DG</td><td>72.40</td><td style="color:#ed5353;width:55px;">-6.42</td><td class="width-cl">72.49</td><td>-0.12%</td><td class="width-cl">73.2</td><td class="width-cl">71.65</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">02:10</td><td style="text-align:left;"><a href="https://investorplace.com/2016/11/dollar-general-corp-dg-stock-retail-stock/" target="_blank">Why Dollar General Corp. (DG) Is a Top-10 Retail Stock</a></td></tr><tr><td style="color:#1893f2;width:55px;">VIV</td><td>12.37</td><td style="color:#ed5353;width:55px;">-5.21</td><td class="width-cl">12.47</td><td>-0.80%</td><td class="width-cl">12.5</td><td class="width-cl">12.36</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl">29-Nov</td><td class="width-cl">22:11</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/29/live-stock-coverage-telefonica-brasil-sa-adr-rises-a-lot-today-is-now-one-of-the-best-performer/" target="_blank">Live Stock Coverage: Telefonica Brasil SA (ADR) Rises A lot Today, Is Now One ...</a></td></tr><tr><td style="color:#1893f2;width:55px;">GNC</td><td>13.72</td><td style="color:#ed5353;width:55px;">-5.05</td><td class="width-cl">14.3</td><td>-4.06%</td><td class="width-cl">14.3</td><td class="width-cl">13.7</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl">1-Dec</td><td class="width-cl">19:06</td><td style="text-align:left;"><a href="https://www.thecerbatgem.com/2016/12/01/gnc-holdings-inc-gnc-sees-large-increase-in-short-interest.html" target="_blank">GNC Holdings Inc. (GNC) Sees Large Increase in Short Interest</a></td></tr><tr><td style="color:#1893f2;width:55px;">TSU</td><td>11.62</td><td style="color:#ed5353;width:55px;">-4.44</td><td class="width-cl">11.6</td><td>0.17%</td><td class="width-cl">11.74</td><td class="width-cl">11.57</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">CBL</td><td>11.36</td><td style="color:#ed5353;width:55px;">-4.30</td><td class="width-cl">11.76</td><td>-3.40%</td><td class="width-cl">11.76</td><td class="width-cl">11.35</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr><td style="color:#1893f2;width:55px;">BRFS</td><td>14.61</td><td style="color:#ed5353;width:55px;">-4.07</td><td class="width-cl">14.66</td><td>-0.34%</td><td class="width-cl">14.75</td><td class="width-cl">14.58</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">WB</td><td>49.48</td><td style="color:#ed5353;width:55px;">-3.56</td><td class="width-cl">50.81</td><td>-2.62%</td><td class="width-cl">50.82</td><td class="width-cl">49.15</td><td></td><td class="width-cl">30-Nov</td><td class="width-cl">21:10</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/30/weibo-corp-adr-stock-price-could-go-down-after-todays-bearish-options-activity/" target="_blank">Weibo Corp (ADR) Stock Price Could Go Down After Today's Bearish Options Activity</a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">ITUB</td><td>9.99</td><td style="color:#ed5353;width:55px;">-3.34</td><td class="width-cl">10.06</td><td>-0.70%</td><td class="width-cl">10.08</td><td class="width-cl">9.95</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">BEAV</td><td>58.04</td><td style="color:#ed5353;width:55px;">-3.33</td><td class="width-cl">58.25</td><td>-0.36%</td><td class="width-cl">58.3</td><td class="width-cl">57.87</td><td style="background-color:#99e5a2;color:green;">HIGH</td><td class="width-cl">1-Dec</td><td class="width-cl">04:33</td><td style="text-align:left;"><a href="http://www.reuters.com/article/us-starboard-rockwell-collins-idUSKBN13P2VU" target="_blank">Starboard questions Rockwell Collins' B/E Aerospace deal: source</a></td></tr><tr><td style="color:#1893f2;width:55px;">SRPT</td><td>33.23</td><td style="color:#ed5353;width:55px;">-3.01</td><td class="width-cl">34.21</td><td>-2.86%</td><td class="width-cl">34.427</td><td class="width-cl">32.85</td><td></td><td class="width-cl">1-Dec</td><td class="width-cl">02:11</td><td style="text-align:left;"><a href="https://friscofastball.com/2016/11/30/price-action-alert-could-sarepta-therapeutics-inc-gain-strenght-the-stock-reaches-52-week-low/" target="_blank">Price Action Alert: Could Sarepta Therapeutics Inc Gain Strenght? The Stock ...</a></td></tr><tr style="background-color:#ede980"><td style="color:#1893f2;width:55px;">EWZ</td><td>32.51</td><td style="color:#ed5353;width:55px;">-2.93</td><td class="width-cl">32.63</td><td>-0.37%</td><td class="width-cl">32.71</td><td class="width-cl">32.4</td><td style="background-color:#ef8b8b;color:red;">LOW</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr><td style="color:#1893f2;width:55px;">ERY</td><td>9.81</td><td style="color:#ed5353;width:55px;">-2.87</td><td class="width-cl">9.62</td><td>1.98%</td><td class="width-cl">9.85</td><td class="width-cl">9.59</td><td style="background-color:#99e5a2;color:green;">HIGH</td><td class="width-cl"></td><td class="width-cl"></td><td style="text-align:left;"><a href="target='_blank'"></a></td></tr><tr><td style="color:#1893f2;width:55px;">BAH</td><td>36.74</td><td style="color:#ed5353;width:55px;">-2.83</td><td class="width-cl">36.74</td><td>0.00%</td><td class="width-cl">36.83</td><td class="width-cl">36.64</td><td style="background-color:#99e5a2;color:green;">HIGH</td><td class="width-cl">1-Dec</td><td class="width-cl">18:03</td><td style="text-align:left;"><a href="http://www.wsj.com/articles/carlyle-to-sell-remaining-stake-in-booz-allen-hamilton-1480595601" target="_blank">Carlyle to Sell Remaining Stake in Booz Allen Hamilton</a></td></tr></tbody>
+    </table>
+    <br>
+
+
+</body></html>
