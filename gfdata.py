@@ -58,7 +58,7 @@ def get_news_data(symbol):
     return article_json
 
 
-def get_browser():
+def get_browser(pid):
     global browser
     browser.get(url_login)
     try:
@@ -76,7 +76,8 @@ def get_browser():
         passwordElem.send_keys(google_password)
         signinButton = browser.find_element_by_id('signIn')
         signinButton.click()
-    browser.get('https://www.google.com/finance/portfolio?action=view&pid=3&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview')
+    purl = 'https://www.google.com/finance/portfolio?action=view&pid='+pid+'&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview'    
+    browser.get(purl)
 
 
 def get_finance_fund_data_phantom():
@@ -92,9 +93,9 @@ def get_finance_fund_data_phantom():
     return fdata
 
 
-def get_finance_data_phantom():
+def get_finance_data_phantom(pid):
     global browser
-    get_browser()
+    get_browser(pid)
     link = browser.find_element_by_link_text('Overview')
     link.click()
 

@@ -63,8 +63,8 @@
             var $loading = $('.loader').hide();
             function LoadFinance() {
                 $loading.show();
-                console.log({{pid}});
-                $.getJSON( "/api", function( data ) {
+                var api_url = "/api/"+{{pid}}
+                $.getJSON( api_url, function( data ) {
                     $loading.hide();
                     $.each( data, function( key, val ) {
                         var tbodyid = "#"+key;
@@ -83,7 +83,7 @@
                                 newRowContent += "<td style='color:#3fc151;width:55px;'>"+kval.change+"</td>"
                             }
                             newRowContent += "<td class='width-cl'>"+kval.open+"</td>";
-                            newRowContent += "<td>"+kval.net_change+"%</td>";
+                            newRowContent += "<td>"+kval.net_change+"</td>";
                             newRowContent += "<td class='width-cl'>"+kval.high+"</td>";
                             newRowContent += "<td class='width-cl'>"+kval.low+"</td>";
                             if (kval.day_range.st == 1){

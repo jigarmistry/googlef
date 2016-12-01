@@ -35,8 +35,8 @@ def format_date_time(timestamp):
     return ndate, ntime    
 
 
-def get_finance_data():
-    nav_filter_list, pos_filter_list = get_finance_data_phantom()
+def get_finance_data(pid):
+    nav_filter_list, pos_filter_list = get_finance_data_phantom(pid)
 
     with open(os.path.join(__location__, 'data.json'), 'r') as data_file:
         json_data = json.load(data_file)
@@ -100,7 +100,7 @@ def format_api_response(item_list):
         item["change"] = nl[3]
         item["open"] = nl[6]
         try:
-            item["net_change"] = format(((float(nl[2])-float(nl[6]))/float(nl[6]))*100, '.2f')
+            item["net_change"] = format(((float(nl[2])-float(nl[6]))/float(nl[6]))*100, '.2f')+"%"
         except Exception as e :
             item["net_change"] = ""
         item["high"] = nl[7]
@@ -113,8 +113,8 @@ def format_api_response(item_list):
     return ret_list
 
 
-def generate_api_response():
-    nav_list, pos_list = get_finance_data()
+def generate_api_response(pid):
+    nav_list, pos_list = get_finance_data(pid)
     json_response = {}
     json_response["nav"] = format_api_response(nav_list)
     json_response["pos"] = format_api_response(pos_list)
