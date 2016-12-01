@@ -64,6 +64,38 @@ def get_finance_data():
     return nav_filter_list, pos_filter_list
 
 
+def format_api_response(item_list):
+    ret_list = []
+    for nl in item_list:
+        item = {}
+        item["symbol"] = nl[1]
+        item["last_price"] = nl[2]
+        item["change"] = nl[3]
+        item["open"] = nl[6]
+        item["net_change"] = format(((float(nl[2])-float(nl[6]))/float(nl[6]))*100, '.2f')
+        item["high"] = nl[7]
+        item["low"] = nl[8]
+        value,st = calculate_day_range(nl[2], nl[7], nl[8])
+        item["day_range"] = {"value":value, "st":st}
+        item["news"] = nl[10]
+        item["is_rank"] = nl[11]
+        ret_list.append(item)
+    return ret_list
+
+
+def generate_api_response():
+    # nav_list, pos_list = get_finance_data()
+    nav_list = [['Direxion Shares...', 'ERY', '10.10', '-15.27', '78.99M', '', '10.72', '10.72', '9.775', '-1.82', 'Direxion Shares Exchange Traded Fund Trust (JNUG): The Potential &#39;Gold Trigger ...', 'NO'], ['American Eagle Outfitter...', 'AEO', '16.56', '-12.43', '3.09B', '', '16.87', '16.98', '16.05', '-2.35', 'American Eagle Outfitters appoints Bob Madore as EVP, Chief Financial Officer', 'NO'], ['Direxion Daily S&P...', 'LABU', '37.96', '-8.57', '235.42M', '', '42.22', '42.22', '37.83', '-3.56', 'Direxion Daily S&amp;P Biotech Bull 3X Shares', 'NO'], ['Valeant Pharmaceuticals...', 'VRX', '15.79', '-7.98', '5.30B', '', '17.02', '17.08', '15.25', '-1.37', 'Live Stock Coverage: Valeant Pharmaceuticals Intl Inc Stock Is At 52-Week Low Now', 'NO'], ['Integrated Device Tech...', 'IDTI', '23.40', '-6.70', '3.11B', '', '25.08', '25.08', '23.39', '-1.68', 'Price Change to Note: Is Integrated Device Technology Inc&#39;s Fuel Running Low ...', 'NO'], ['Sarepta Therapeutics Inc', 'SRPT', '34.26', '-6.70', '1.89B', '', '36.75', '36.9397', '34.08', '-2.46', 'Price Action Alert: Could Sarepta Therapeutics Inc Gain Strenght? The Stock ...', 'NO'], ['bluebird bio Inc', 'BLUE', '60.35', '-6.29', '2.39B', '', '64.5', '67.05', '60.3', '-4.05', 'Notable Reporting: Today bluebird bio Inc Stock Crashes', 'NO'], ['Horizon Pharma PLC', 'HZNP', '19.81', '-5.89', '3.19B', '', '21.3', '21.32', '19.3', '-1.24', 'A New Kind of Stock Chart: Horizon Pharma plc (NASDAQ:HZNP) Critical Pivot Points', 'NO'], ['Ionis Pharmaceuticals...', 'IONS', '43.76', '-5.42', '5.36B', '', '45.78', '46.27', '43.49', '-2.51', 'Price Change to Note: A Reversal for Ionis Pharmaceuticals Inc Is Not Near ...', 'NO'], ['BofI Holding, Inc.', 'BOFI', '23.63', '-5.40', '1.51B', '', '25.45', '25.49', '23.55', '-1.35', 'Live Price Coverage: BofI Holding, Inc. Just Recorded A Sigfniciant Decline', 'NO'], ['Juno Therapeutics Inc', 'JUNO', '20.05', '-5.11', '2.03B', '', '21.1', '21.12', '20', '-1.08', 'Price Action to Note: What&#39;s in Juno Therapeutics Inc After Today&#39;s ...', 'NO'], ['Quintiles IMS Holdings...', 'Q', '76.83', '-5.05', '19.18B', '', '81.18', '81.18', '76.5', '-4.09', 'Noteworthy Price Action: A Reversal for Quintiles IMS Holdings Inc Is Not Near ...', 'NO'], ['PBF Energy Inc', 'PBF', '23.99', '-4.84', '2.49B', '', '25.35', '25.965', '23.46', '-1.22', 'PBF Energy Inc. (PBF) Upgrade to Hold by The Zacks Investment Research', 'NO'], ['Vertex Pharmaceuticals...', 'VRTX', '81.60', '-4.73', '19.95B', '', '85.86', '86.91', '81.59', '-4.05', 'BMO Reiterates Vertex Pharmaceuticals Incorporated (VRTX) at Market Perform On ...', 'NO'], ['Select Medical Hldgs...', 'SEM', '12.15', '-4.71', '1.61B', '', '12.8', '12.8', '12.075', '-0.60', 'Notable Price Action: What&#39;s Select Medical Holdings Corporation Downside ...', 'NO']]
+
+    pos_list = [['California Resources...', 'CRC', '17.40', '44.40', '662.22M', '', '15.59', '17.56', '13.8201', '+5.35', 'Stock Mover of The Day: What&#39;s Propelling California Resources Corp to ...', 'NO'], ['Oasis Petroleum Inc.', 'OAS', '14.97', '27.73', '3.48B', '', '13.59', '15.02', '13.47', '+3.25', 'Market Runner: Could Oasis Petroleum Inc. Lose its Strength? The Stock Reaches ...', 'NO'], ['WPX Energy Inc', 'WPX', '15.54', '27.59', '5.11B', '', '13.71', '15.63', '13.71', '+3.36', 'Notable Price Action: WPX Energy Inc Sets 52-Week High; Strong Momentum for ...', 'NO'], ['SM Energy Co', 'SM', '39.86', '24.91', '3.34B', '', '37.25', '40.02', '36.8', '+7.95', 'Strategy To YieldBoost SM From 0.3% To 13.5% Using Options', 'NO'], ['Continental Resources...', 'CLR', '58.01', '22.88', '20.80B', '', '52.37', '58.859', '52.37', '+10.80', 'Noteworthy Analyst Evaluations of Stocks: Freeport-McMoRan Inc. (NYSE:FCX ...', 'NO'], ['Nabors Industries Ltd.', 'NBR', '16.10', '22.25', '4.45B', '', '14.21', '16.5', '14.21', '+2.93', 'Here&#39;s Why Nabors Industries Ltd., Patterson-UTI Energy, Inc., and Precision ...', 'NO'], ['Callon Petroleum Company', 'CPE', '17.64', '22.08', '2.72B', '', '16.61', '17.975', '16.28', '+3.19', 'Callon Petroleum Company Risk Points versus Energy', 'NO'], ['Marathon Oil Corporation', 'MRO', '18.06', '20.80', '14.72B', '', '16.38', '18.55', '16.38', '+3.11', 'Budget 2016: Mr Jaitley, when the weak state offers asylum to black money ...', 'NO'], ['Carrizo Oil & Gas Inc', 'CRZO', '42.35', '20.42', '2.68B', '', '39.23', '42.435', '38.03', '+7.18', 'Stock of The Day: What&#39;s Propelling Carrizo Oil &amp; Gas Inc to Increase So Much?', 'NO'], ['Superior Energy...', 'SPN', '17.24', '18.65', '2.52B', '', '15.74', '17.36', '15.66', '+2.71', 'Stock On Watch: What Will Happen to Superior Energy Services, Inc. Next? The ...', 'NO'], ['Matador Resources Co', 'MTDR', '26.64', '17.46', '2.38B', '', '24.62', '27.3', '24.62', '+3.96', 'Stock Mover of the Day: Matador Resources Co on Focus After Raising In Today&#39;s ...', 'NO'], ['Transocean LTD', 'RIG', '12.90', '17.06', '4.56B', '', '11.82', '13.2752', '11.82', '+1.88', 'Price Action Don&#39;t Lie: Could Transocean LTD Lose Strenght? The Stock ...', 'NO'], ['Energen Corporation', 'EGN', '62.07', '16.45', '5.83B', '', '60.17', '62.22', '57.58', '+8.77', 'Notable Price Action: Energen Corporation Increases Again; Strong Momentum for ...', 'NO'], ['Patterson-UTI Energy...', 'PTEN', '26.67', '16.16', '3.83B', '', '24.64', '27.34', '24.415', '+3.71', 'Here&#39;s Why Nabors Industries Ltd., Patterson-UTI Energy, Inc., and Precision ...', 'NO'], ['Laredo Petroleum Inc', 'LPI', '15.99', '15.95', '3.81B', '', '15.28', '16.33', '15.14', '+2.20', 'Today&#39;s Stock Alert: After Today&#39;s Big Increase, Is Laredo Petroleum Inc&#39;s ...', 'NO']]
+
+    json_response = {}
+    json_response["nav"] = format_api_response(nav_list)
+    json_response["pos"] = format_api_response(pos_list)
+
+    return json_response
+
+
 def generate_report(nav_list, pos_list):
     """['Name', 'Symbol', 'Last price', 'Change', 'Mkt cap', 'Volume', 'Open', 'High', 'Low', "Day's gain"]"""
 
