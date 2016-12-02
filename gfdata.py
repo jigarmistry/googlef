@@ -8,7 +8,8 @@ from selenium import webdriver
 from operator import itemgetter
 
 # browser = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
-browser = webdriver.PhantomJS("/usr/local/lib/phantomjs/bin/phantomjs")
+browser = webdriver.PhantomJS("/usr/local/lib/phantomjs/bin/phantomjs",service_args=['--ssl-protocol=any','--ignore-ssl-errors=true','--load-images=no'])
+browser.set_window_size(1600, 900)
 
 url_login = "https://accounts.google.com/ServiceLogin?service=finance"
 url_auth = "https://accounts.google.com/ServiceLoginAuth"
@@ -76,6 +77,18 @@ def get_browser(pid):
         passwordElem.send_keys(google_password)
         signinButton = browser.find_element_by_id('signIn')
         signinButton.click()
+
+    #btns =  browser.find_elements_by_xpath("//*[@type='submit']")
+    #btns[0].click()
+    #for i in browser.find_elements_by_xpath("//*[@type='submit']"):
+    #    print i.get_attribute("value")
+    #remailElem = browser.find_element_by_name('email')
+    #remailElem.send_keys("stockforindia@gmail.com")
+    #rsigninButton = browser.find_element_by_id('submit')
+    #rsigninButton.click() 
+
+    #print browser.page_source
+    #     
     purl = 'https://www.google.com/finance/portfolio?action=view&pid='+pid+'&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview'    
     browser.get(purl)
 
