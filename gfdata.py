@@ -7,8 +7,12 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from operator import itemgetter
 
-# browser = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
-browser = webdriver.PhantomJS("/usr/local/lib/phantomjs/bin/phantomjs",service_args=['--ssl-protocol=any','--ignore-ssl-errors=true','--load-images=no'])
+
+# gunicorn api:app  -w 8 -b 0.0.0.0:8005
+
+browser = webdriver.PhantomJS("/usr/local/lib/phantomjs/bin/phantomjs", service_args=[
+                              '--ssl-protocol=any', '--ignore-ssl-errors=true', '--load-images=no'])
+
 browser.set_window_size(1600, 900)
 
 url_login = "https://accounts.google.com/ServiceLogin?service=finance"
@@ -19,10 +23,12 @@ google_password = "algoforme12"
 
 
 class SessionGoogle:
+
     def __init__(self, url_login, url_auth, login, pwd):
         self.ses = requests.session()
         login_html = self.ses.get(url_login)
-        soup_login = BeautifulSoup(login_html.content,"lxml").find('form').find_all('input')
+        soup_login = BeautifulSoup(login_html.content, "lxml").find(
+            'form').find_all('input')
         my_dict = {}
         for u in soup_login:
             if u.has_attr('value'):
@@ -32,20 +38,21 @@ class SessionGoogle:
         self.ses.post(url_auth, data=my_dict)
 
     def get(self, URL):
-        return self.ses.get(URL,stream=True,timeout=None).text
+        return self.ses.get(URL, stream=True, timeout=None).text
 
 
-def find_between( s, first, last ):
+def find_between(s, first, last):
     try:
-        start = s.index( first ) + len( first )
-        end = s.index( last, start )
+        start = s.index(first) + len(first)
+        end = s.index(last, start)
         return s[start:end]
     except ValueError:
         return ""
 
 
 def get_news_data(symbol):
-    news_url = 'http://www.google.com/finance/company_news?output=json&q=' + symbol + '&start=0&num=1'
+    news_url = 'http://www.google.com/finance/company_news?output=json&q=' + \
+        symbol + '&start=0&num=1'
     r = requests.get(news_url)
     article_json = []
     if r.status_code == 200:
@@ -78,18 +85,17 @@ def get_browser(pid):
         signinButton = browser.find_element_by_id('signIn')
         signinButton.click()
 
-    #btns =  browser.find_elements_by_xpath("//*[@type='submit']")
-    #btns[0].click()
-    #for i in browser.find_elements_by_xpath("//*[@type='submit']"):
-    #    print i.get_attribute("value")
-    #remailElem = browser.find_element_by_name('email')
-    #remailElem.send_keys("stockforindia@gmail.com")
-    #rsigninButton = browser.find_element_by_id('submit')
-    #rsigninButton.click() 
+        # Only Needed for first time
+        # btns =  browser.find_elements_by_xpath("//*[@type='submit']")
+        # btns[0].click()
+        # remailElem = browser.find_element_by_name('email')
+        # remailElem.send_keys("stockforindia@gmail.com")
+        # rsigninButton = browser.find_element_by_id('submit')
+        # rsigninButton.click()
+        # print browser.page_source
 
-    #print browser.page_source
-    #     
-    purl = 'https://www.google.com/finance/portfolio?action=view&pid='+pid+'&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview'    
+    purl = 'https://www.google.com/finance/portfolio?action=view&pid=' + \
+        pid + '&authuser=2&ei=sAg8WLn-MYviugSQ_4WQBA?pview=sview'
     browser.get(purl)
 
 
@@ -97,12 +103,15 @@ def get_finance_fund_data_phantom():
     global browser
     link = browser.find_element_by_link_text('Fundamentals')
     link.click()
-    html_data = browser.find_element_by_class_name("gf-table").get_attribute('innerHTML')
-    table_data = [[cell.text for cell in row("td")] for row in BeautifulSoup(html_data,"lxml")("tr")]
+    html_data = browser.find_element_by_class_name(
+        "gf-table").get_attribute('innerHTML')
+    table_data = [[cell.text for cell in row(
+        "td")] for row in BeautifulSoup(html_data, "lxml")("tr")]
     fdata = {}
     for row in table_data:
         if len(row) == 11:
-            fdata[row[2]] = {"avg_vol":row[5], "52wkhigh":row[6],"52wklow":row[7]}
+            fdata[row[2]] = {"avg_vol": row[5],
+                             "52wkhigh": row[6], "52wklow": row[7]}
     return fdata
 
 
@@ -112,8 +121,10 @@ def get_finance_data_phantom(pid):
     link = browser.find_element_by_link_text('Overview')
     link.click()
 
-    html_data = browser.find_element_by_class_name("gf-table").get_attribute('innerHTML')
-    table_data = [[cell.text for cell in row("td")] for row in BeautifulSoup(html_data,"lxml")("tr")]
+    html_data = browser.find_element_by_class_name(
+        "gf-table").get_attribute('innerHTML')
+    table_data = [[cell.text for cell in row(
+        "td")] for row in BeautifulSoup(html_data, "lxml")("tr")]
 
     fdata = []
     for row in table_data:
@@ -123,13 +134,14 @@ def get_finance_data_phantom(pid):
                 if i == 0:
                     continue
                 if i == 4:
-                    v = find_between(row[4],"(","%")
+                    v = find_between(row[4], "(", "%")
                 i_list.append(v)
             fdata.append(i_list)
 
-    fdata.sort(key = lambda row: float(row[3]))
+    fdata.sort(key=lambda row: float(row[3]))
     nav_filter_list = fdata[0:15]
-    pos_filter_list = sorted(fdata[-15:], key = itemgetter(3) ,reverse=True)
+    temp = fdata[-15:]
+    pos_filter_list = temp[::-1]
 
     # dict_fund_data = get_finance_fund_data_phantom()
 
@@ -137,12 +149,15 @@ def get_finance_data_phantom(pid):
 
 
 def get_finance_data_requests():
-    session = SessionGoogle(url_login, url_auth, google_username, google_password)
-    download_data  = session.get(url_finance_data)
+    session = SessionGoogle(url_login, url_auth,
+                            google_username, google_password)
+    download_data = session.get(url_finance_data)
     csv_data = list(csv.reader(download_data.splitlines(), delimiter=','))
-    filter_list = [row for row in csv_data[1:] if row[0]!="" and row[9]!=""]
-    filter_list.sort(key = lambda row: float(row[9]))
+    filter_list = [row for row in csv_data[
+        1:] if row[0] != "" and row[9] != ""]
+    filter_list.sort(key=lambda row: float(row[9]))
     nav_filter_list = filter_list[0:15]
-    pos_filter_list = sorted(filter_list[-15:], key = itemgetter(9) ,reverse=True)
+    pos_filter_list = sorted(
+        filter_list[-15:], key=itemgetter(9), reverse=True)
 
     return nav_filter_list, pos_filter_list

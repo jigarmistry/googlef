@@ -3,3 +3,4 @@ Flask==0.11.1
 requests==2.12.1
 demjson==2.2.4
 selenium==3.0.2
+lxml==3.5.0    

@@ -13,8 +13,9 @@
             height: 8px;
             text-align: center;
         }
+        
         .width-cl {
-            width:55px;
+            width: 55px;
         }
         
         body {
@@ -75,7 +76,7 @@
                                var newRowContent = "<tr style='background-color:#ede980'>";
                             }
                             newRowContent += "<td style='color:#1893f2;width:55px;'>"+kval.symbol+"</td>";
-                            newRowContent += "<td>"+kval.last_price+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.last_price+"</td>";
                             if (key == "nav"){
                                 newRowContent += "<td style='color:#ed5353;width:55px;'>"+kval.change+"</td>"
                             }
@@ -83,7 +84,7 @@
                                 newRowContent += "<td style='color:#3fc151;width:55px;'>"+kval.change+"</td>"
                             }
                             newRowContent += "<td class='width-cl'>"+kval.open+"</td>";
-                            newRowContent += "<td>"+kval.net_change+"</td>";
+                            newRowContent += "<td class='width-cl'>"+kval.net_change+"</td>";
                             newRowContent += "<td class='width-cl'>"+kval.high+"</td>";
                             newRowContent += "<td class='width-cl'>"+kval.low+"</td>";
                             if (kval.day_range.st == 1){
@@ -93,7 +94,7 @@
                                 newRowContent += "<td style='background-color:#ef8b8b;color:red;'>"+kval.day_range.value+"</td>";
                             }
                             else{
-                                newRowContent += "<td>"+kval.day_range.value+"</td>";
+                                newRowContent += "<td class='width-cl'>"+kval.day_range.value+"</td>";
                             }
                             newRowContent += "<td class='width-cl'>"+kval.news.date+"</td>";
                             newRowContent += "<td class='width-cl'>"+kval.news.time+"</td>";
@@ -104,7 +105,7 @@
                 });
             }
             LoadFinance();
-            setInterval( LoadFinance, 70000 );
+            setInterval( LoadFinance, 120000 );
         });
     </script>
 </head>
@@ -116,13 +117,13 @@
         <thead>
             <tr>
                 <th>Symbol</th>
-                <th>Last Price</th>
+                <th>LTP</th>
                 <th>Change</th>
                 <th>Open</th>
-                <th>% Net Change</th>
+                <th>% Net</th>
                 <th>High</th>
                 <th>Low</th>
-                <th>Day's Range</th>
+                <th>DPR</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>News</th>
@@ -136,13 +137,13 @@
         <thead>
             <tr>
                 <th>Symbol</th>
-                <th>Last Price</th>
+                <th>LTP</th>
                 <th>Change</th>
                 <th>Open</th>
-                <th>% Net Change</th>
+                <th>% Net</th>
                 <th>High</th>
                 <th>Low</th>
-                <th>Day's Range</th>
+                <th>DPR</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>News</th>
