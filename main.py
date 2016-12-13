@@ -103,17 +103,18 @@ def format_api_response(item_list):
         item["last_price"] = nl[2]
         item["change"] = nl[3]
         item["open"] = nl[6]
-        try:
-            item["net_change"] = format(
-                ((float(nl[2]) - float(nl[6])) / float(nl[6])) * 100, '.2f') + "%"
-        except Exception as e:
-            item["net_change"] = ""
+        # try:
+        #     item["net_change"] = format(
+        #         ((float(nl[2].replace(',', '')) - float(nl[6].replace(',', ''))) / float(nl[6].replace(',', ''))) * 100, '.2f') + "%"
+        # except Exception as e:
+        #     item["net_change"] = ""
+        item["net_change"] = str(nl[9]) + "%"
         item["high"] = nl[7]
         item["low"] = nl[8]
         value, st = calculate_day_range(nl[2], nl[7], nl[8])
         item["day_range"] = {"value": value, "st": st}
-        item["news"] = nl[10]
-        item["is_rank"] = nl[11]
+        item["news"] = nl[11]
+        item["is_rank"] = nl[12]
         ret_list.append(item)
     return ret_list
 

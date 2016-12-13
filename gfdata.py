@@ -115,6 +115,45 @@ def get_finance_fund_data_phantom():
     return fdata
 
 
+def format_data_per_change(fdata):
+    cfpdata = []
+    cfndata = []
+    for d in fdata:
+        f = d
+        try:
+            d.append(format(((float(d[2].replace(
+                ',', '')) - float(d[8].replace(',', ''))) / float(d[8].replace(',', ''))) * 100), '.2f')
+        except Exception as e:
+            d.append('0')
+        cfpdata.append(d)
+        try:
+            f.append(format(((float(f[2].replace(
+                ',', '')) - float(f[7].replace(',', ''))) / float(f[7].replace(',', ''))) * 100), '.2f')
+        except Exception as e:
+            f.append('0')
+        cfndata.append(f)
+    return cfndata, cfpdata
+
+    # for d in fdata:
+    #     e = d[3]
+    #     if e[0] == "+":
+    #         try:
+    #             d.append(format(((float(d[2].replace(
+    #                 ',', '')) - float(d[8].replace(',', ''))) / float(d[8].replace(',', ''))) * 100), '.2f')
+    #         except Exception as e:
+    #             d.append('0')
+    #     elif e[0] == "-":
+    #         try:
+    #             d.append(format(((float(d[2].replace(
+    #                 ',', '')) - float(d[7].replace(',', ''))) / float(d[7].replace(',', ''))) * 100), '.2f')
+    #         except Exception as e:
+    #             d.append('0')
+    #     else:
+    #         d.append('0')
+    #     cfdata.append(d)
+    return cfdata
+
+
 def get_finance_data_phantom(pid):
     global browser
     get_browser(pid)
@@ -124,7 +163,7 @@ def get_finance_data_phantom(pid):
     html_data = browser.find_element_by_class_name(
         "gf-table").get_attribute('innerHTML')
     table_data = [[cell.text for cell in row(
-        "td")] for row in BeautifulSoup(html_data, "lxml")("tr")]
+        "td")] for row in BeautifulSoup(html_data, "html.parser")("tr")]
 
     fdata = []
     for row in table_data:
@@ -138,10 +177,17 @@ def get_finance_data_phantom(pid):
                 i_list.append(v)
             fdata.append(i_list)
 
-    fdata.sort(key=lambda row: float(row[3]))
-    nav_filter_list = fdata[0:15]
-    temp = fdata[-15:]
+    cfndata, cfpdata = format_data_per_change(fdata)
+
+    cfndata.sort(key=lambda row: float(row[9]))
+    nav_filter_list = cfndata[0:15]
+    # temp = cfdata[-15:]
+    # pos_filter_list = temp[::-1]
+    cfpdata.sort(key=lambda row: float(row[9]))
+    temp = cfpdata[-15:]
     pos_filter_list = temp[::-1]
+    print (pos_filter_list)
+    print (nav_filter_list)
 
     # dict_fund_data = get_finance_fund_data_phantom()
 
