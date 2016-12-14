@@ -8,8 +8,6 @@ from selenium import webdriver
 from operator import itemgetter
 
 
-# gunicorn api:app  -w 8 -b 0.0.0.0:8005
-
 browser = webdriver.PhantomJS("/usr/local/lib/phantomjs/bin/phantomjs", service_args=[
                               '--ssl-protocol=any', '--ignore-ssl-errors=true', '--load-images=no'])
 
@@ -116,41 +114,24 @@ def get_finance_fund_data_phantom():
 
 
 def format_data_per_change(fdata):
-    cfpdata = []
-    cfndata = []
+    cfdata = []
     for d in fdata:
-        f = d
-        try:
-            d.append(format(((float(d[2].replace(
-                ',', '')) - float(d[8].replace(',', ''))) / float(d[8].replace(',', ''))) * 100), '.2f')
-        except Exception as e:
+        e = d[3]
+        if e[0] != "-":
+            try:
+                d.append(format(((float(d[2].replace(
+                    ',', '')) - float(d[8].replace(',', ''))) / float(d[8].replace(',', ''))) * 100, '.2f'))
+            except Exception as e:
+                d.append('0')
+        elif e[0] == "-":
+            try:
+                d.append(format(((float(d[2].replace(
+                    ',', '')) - float(d[7].replace(',', ''))) / float(d[7].replace(',', ''))) * 100, '.2f'))
+            except Exception as e:
+                d.append('0')
+        else:
             d.append('0')
-        cfpdata.append(d)
-        try:
-            f.append(format(((float(f[2].replace(
-                ',', '')) - float(f[7].replace(',', ''))) / float(f[7].replace(',', ''))) * 100), '.2f')
-        except Exception as e:
-            f.append('0')
-        cfndata.append(f)
-    return cfndata, cfpdata
-
-    # for d in fdata:
-    #     e = d[3]
-    #     if e[0] == "+":
-    #         try:
-    #             d.append(format(((float(d[2].replace(
-    #                 ',', '')) - float(d[8].replace(',', ''))) / float(d[8].replace(',', ''))) * 100), '.2f')
-    #         except Exception as e:
-    #             d.append('0')
-    #     elif e[0] == "-":
-    #         try:
-    #             d.append(format(((float(d[2].replace(
-    #                 ',', '')) - float(d[7].replace(',', ''))) / float(d[7].replace(',', ''))) * 100), '.2f')
-    #         except Exception as e:
-    #             d.append('0')
-    #     else:
-    #         d.append('0')
-    #     cfdata.append(d)
+        cfdata.append(d)
     return cfdata
 
 
@@ -177,17 +158,12 @@ def get_finance_data_phantom(pid):
                 i_list.append(v)
             fdata.append(i_list)
 
-    cfndata, cfpdata = format_data_per_change(fdata)
+    cfdata = format_data_per_change(fdata)
 
-    cfndata.sort(key=lambda row: float(row[9]))
-    nav_filter_list = cfndata[0:15]
-    # temp = cfdata[-15:]
-    # pos_filter_list = temp[::-1]
-    cfpdata.sort(key=lambda row: float(row[9]))
-    temp = cfpdata[-15:]
+    cfdata.sort(key=lambda row: float(row[10]))
+    nav_filter_list = cfdata[0:15]
+    temp = cfdata[-15:]
     pos_filter_list = temp[::-1]
-    print (pos_filter_list)
-    print (nav_filter_list)
 
     # dict_fund_data = get_finance_fund_data_phantom()
 
